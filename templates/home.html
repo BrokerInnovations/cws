@@ -1,0 +1,137 @@
+<div class="container-fluid home">
+  <div class="row update-row">
+    <span class="btn btn-md btn-primary" ng-click="homeVm.update()">Update</span>
+  </div>
+  <div class="row button-row text-center">
+    <div class="button-update">
+      <select name="zone_name" ng-model="homeVm.zoneSelect" ng-change="homeVm.zoneChange()">
+        <option value="">Select a Zone</option>
+        <option value="{{data.zone_descr}}" ng-repeat="data in homeVm.zoneTable">{{data.zone_descr}}</option>
+      </select>
+      <select ng-disabled="homeVm.sectionOptions.length<1" name="section_name" ng-model="homeVm.sectionSelect" ng-change="homeVm.sectionChange()">
+        <option value="">Select a Section</option>
+        <!-- <option ng-if="homeVm.sectionOptions.length <1">Select Zone First</option> -->
+        <option value="{{data}}" ng-repeat="data in homeVm.sectionOptions">{{data}}</option>
+      </select>
+      <select ng-disabled="homeVm.rowOptions.length<1" name="row_name" ng-model="homeVm.rowSelect" >
+        <option value="">Select a Row</option>
+        <option value="{{data}}" ng-repeat="data in homeVm.rowOptions">{{data}}</option>
+      </select>
+      <span class="btn btn-sm btn-primary" ng-click="homeVm.getPrice()">Get Price</span>
+      <span ng-if="homeVm.show" class="result">Final Price : {{homeVm.final}}</span>
+    </div>
+  </div>
+  <div class="row table-row">
+    <div class="col-md-5 col-sm-5 column">
+      <div>
+        <h3>Zone Table</h3>
+        <div class="row">
+          <form class="section-form col-md-8">
+            <input type="text" class="form-control" placeholder="Search" ng-model="homeVm.searchZone">
+          </form>
+          <select class="col-md-2 col-offset-md-2" ng-model="homeVm.zoneValue" ng-change="homeVm.zoneSort()">
+            <option value="">Sort By</option>
+            <option value="zone_descr">Zone Name</option>
+            <option value="qty_to_broadcast">QTY To Broadcast</option>
+            <option value="zone_base_price">Zone Base Price</option>
+          </select>
+        </div>
+        <div class="table-style">
+          <table class="table table-bordered table-hover table-responsive" id="zone-table">
+            <tr class="info">
+              <thead>
+                <th>Zone Name</th>
+                <th>QTY To Broadcast</th>
+                <th>Zone Base Price</th>
+              </thead>
+            </tr>
+            <tbody ng-repeat="data in homeVm.zoneTable | filter: homeVm.searchZone | orderBy:homeVm.zoneSortValue">
+              <tr class="active">
+                <td>{{data.zone_descr}}</td>
+                <td class="row">
+                  <form ng-submit=homeVm.zoneBaseEdit(data.id,data.zone_base_price,data.qty_to_broadcast)>
+                    <input  type="text" class="form-style col-md-6" ng-model=data.qty_to_broadcast >
+                  </form>
+                </td>
+                <td class="row">
+                  <form ng-submit=homeVm.zoneBaseEdit(data.id,data.zone_base_price,data.qty_to_broadcast)>
+                    <input  type="text" class="form-style col-md-6" ng-model=data.zone_base_price >
+                  </form>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 col-sm-4 column">
+      <div>
+        <h3>Section Table</h3>
+        <div class="row">
+          <form class="section-form col-md-10">
+            <input type="text" class="form-control" placeholder="Search" ng-model="homeVm.searchSection">
+          </form>
+          <select class="col-md-2" ng-model="homeVm.sectionValue" ng-change="homeVm.sectionSort()">
+            <option value="">Sort By</option>
+            <option value="zone_descr">Zone Name</option>
+            <option value="section_desc">Section Name</option>
+            <option value="section_price_offset_pct">Price Pct</option>
+          </select>
+        </div>
+        <div class="table-style">
+          <table class="table table-bordered table-hover table-responsive" id="section-table">
+            <thead>
+              <th>Zone Name</th>
+              <th>Section Name</th>
+              <th>Price Pct</th>
+            </thead>
+            <tbody ng-repeat="data in homeVm.updatedSectionTable | filter: homeVm.searchSection | orderBy: homeVm.sectionSortValue">
+              <tr class="active">
+                <td>{{data.zone_descr}}</td>
+                <td>{{data.section_desc}}</td>
+                <td class="row">
+                  <input  type="text" class="form-style col-md-6" ng-model=data.section_price_offset_pct required>
+                  <span class="updated-value">{{data.value * (1 +  (data.section_price_offset_pct/100))}}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-3 column">
+      <div>
+        <h3>Row Table</h3>
+        <div class="row">
+          <form class="section-form col-md-8">
+            <input type="text" class="form-control" placeholder="Search" ng-model="homeVm.searchRow">
+          </form>
+          <select class="col-md-3 col-offset-md--1" ng-model="homeVm.rowValue" ng-change="homeVm.rowSort()">
+            <option value="">Sort By</option>
+            <option value="level_descr">Level Name</option>
+            <option value="row_desc">Row Name</option>
+            <option value="row_price_offset_pct">Price Pct</option>
+          </select>
+        </div>
+        <div class="table-style">
+          <table class="table table-bordered table-hover table-responsive" id="row-table">
+            <thead>
+              <th>Level Name</th>
+              <th>Row Name</th>
+              <th>Price Pct</th>
+            </thead>
+            <tbody ng-repeat="data in homeVm.rowTable | filter: homeVm.searchRow | orderBy: homeVm.rowSortValue">
+              <tr class="active">
+                <td>{{data.level_descr}}</td>
+                <td>{{data.row_descr}}</td>
+                <td class="row">
+                  <input  type="text" class="form-style col-md-6" ng-model=data.row_price_offset_pct >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
